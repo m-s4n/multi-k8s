@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name: server-deployment   # deployment objesinin ismi
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      component: server  #deployment yonettiği podları bu labeldan bulucak  
+  template:
+    metadata:
+      labels:
+        component: server   # bu label sayesinde servis ve deploymen nesnesi erişecek.
+    spec:
+      containers:
+        - name: server      # container ismi
+          image: cygnetops/multi-server-pgfix-5-11   # kullanılacak image
+          ports:  
+            - containerPort: 5000  # container'a erişme portumuz
+          env:
+            - name: REDIS_HOST
+              value: redis-cluster-ip-service
+            - name: REDIS_PORT
+              value: '6379'
+            - name: PGUSER
+              value: postgres
+            - name: PGHOST
+              value: postgres-cluster-ip-service
+            - name: PGPORT
+              value: '5432'
+            - name: PGDATABASE
+              value: postgres
+            - name: PGPASSWORD
+              valueFrom:       # secret(sır) dan alacağımızı belirttik. 
+                secretKeyRef:  
+                  name: pgpassword    #secret name verildi.  bir secret içinde birden fazla key value olabilir.
+                  key: PGPASSWORD

@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: postgres
+  template:
+    metadata:
+      labels:
+        component: postgres
+    spec:
+      volumes:
+        - name: postgres-storage           # talepte bulunuyor.   # reklamda vaad ettiğinden ver diyoruz.
+          persistentVolumeClaim: 
+            claimName: database-persistent-volume-claim  # iddianın adını veriyoruz.
+      containers:
+        - name: postgres
+          image: postgres
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: postgres-storage    # isim yukarıdaki ile aynı dikkat
+              mountPath: /var/lib/postgresql/data   #container içindeki yeri işaret ediyoruz.
+              subPath: postgres
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pgpassword
+                  key: PGPASSWORD

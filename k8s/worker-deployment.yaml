@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name: worker-deployment   # deployment objesinin ismi
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: worker  #deployment yonettiği podları bu labeldan bulucak  
+  template:
+    metadata:
+      labels:
+        component: worker   # bu label sayesinde servis ve deploymen nesnesi erişecek.
+    spec:
+      containers:
+        - name: worker      # container ismi
+          image: stephengrider/multi-worker   # kullanılacak image
+          env:
+            - name: REDIS_HOST
+              value: redis-cluster-ip-service
+            - name: REDIS_PORT
+              value: '6379'

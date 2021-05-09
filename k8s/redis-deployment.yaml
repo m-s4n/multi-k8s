@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name: redis-deployment   # deployment objesinin ismi
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: redis  #deployment yonettiği podları bu labeldan bulucak  
+  template:
+    metadata:
+      labels:
+        component: redis   # bu label sayesinde servis ve deployment nesnesi erişecek.
+    spec:
+      containers:
+        - name: redis      # container ismi
+          image: redis  # kullanılacak image
+          ports:
+            - containerPort: 6379
